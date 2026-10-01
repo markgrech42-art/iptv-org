@@ -28,3 +28,11 @@ jobs:
 
       - name: Run TVM updater
         run: node scripts/update-tvm.js
+
+      - name: Commit updated TVM stream
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add streams/mt.m3u
+          git diff --cached --quiet || git commit -m "Update TVM stream"
+          git push
