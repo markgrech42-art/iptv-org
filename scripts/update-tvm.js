@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { chromium } = require("playwright");
 
 (async () => {
@@ -32,4 +33,24 @@ const { chromium } = require("playwright");
 
     console.log("TVM stream found:");
     console.log(streamUrl);
+
+    const playlistPath = "streams/mt.m3u";
+    let playlist = fs.readFileSync(playlistPath, "utf8");
+
+    const tvmEntry =
+        /(#EXTINF:-1 tvg-id="TVM\.mt@SD"[^\n]*\n)[^\n]*/;
+
+    if (!tvmEntry.test(playlist)) {
+        console.error("TVM entry was not found in streams/mt.m3u");
+        process.exit(1);
+    }
+
+    playlist = playlist.replace(
+        tvmEntry,
+        `$1${streamUrl}`
+    );
+
+    fs.writeFileSync(playlistPath, playlist);
+
+    console.log("TVM URL updated successfully!");
 })();
